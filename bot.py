@@ -31,7 +31,6 @@ for parts in [2, 1, 0]:
         ./bot/dependancies.sh > $dependenciesFile
     """.format(parts))
 
-exit()
 print('# Test each line with each part:')
 lineNumber = 0
 while lineNumber < length:
