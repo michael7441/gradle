@@ -35,8 +35,8 @@ print('# Test each line with each part:')
 lineNumber = 0
 while lineNumber < length:
     line = lines[lineNumber]
+    print('\n====================================\n' + line + '\n====================================')
     if helper.matchVersion(line, True):
-        print('\n====================================\n' + line + '\n====================================')
         for parts in [2, 1, 0]:
             command = "python3 ./bot/processLine.py {0} {1} {2}".format(lineNumber, parts, gradleFile)
             print(command)
