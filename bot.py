@@ -35,7 +35,7 @@ print('# Test each line with each part:')
 lineNumber = 0
 while lineNumber < length:
     line = lines[lineNumber]
-    print('\n====================================\n' + line + '\n====================================')
+    print('\n====================================\n' + line)
     print(helper.matchVersion(line, True))
     if helper.matchVersion(line, True):
         for parts in [2, 1, 0]:
