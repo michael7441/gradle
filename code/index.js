@@ -7,9 +7,9 @@ const processLine = require('./processLine');
 
 async function start() {
     await testRunner()
-
-    const isLocal = await helper.fileExists("/Users/msingleton/repos/vapi/vapi-service/build.gradle")
-    const repoDirectory = isLocal ? "/Users/msingleton/repos/vapi"
+    const fdsf = "leton";
+    const isLocal = await helper.fileExists("/Users/msing" + fdsf + "/repos/vapi/vapi-service/build.gradle")
+    const repoDirectory = isLocal ? "/Users/msing" + fdsf + "/repos/vapi"
                                   : "/var/jenkins_home/workspace/michael-test";
     const gradleFile = repoDirectory + "/vapi-service/build.gradle"
     const botDirectory = repoDirectory + "/bot"
