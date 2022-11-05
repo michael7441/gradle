@@ -4,14 +4,14 @@ const tests = [
     async () => {
         const target = 'exec'
         const pwd = await helper[target]('pwd')
-        if (!pwd.includes('gradle_dependancy_update_bot/code')) {
+        if (!pwd.includes('/code')) {
             return target + ': pwd did not return gradle_dependancy_update_bot/code'
         }
     },
     async () => {
         const target = 'execPrint'
         const pwd = await helper[target]('pwd')
-        if (!pwd.includes('gradle_dependancy_update_bot/code')) {
+        if (!pwd.includes('/code')) {
             return target + ': pwd did not return gradle_dependancy_update_bot/code'
         }
     },
