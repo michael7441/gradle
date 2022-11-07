@@ -93,6 +93,13 @@ const tests = [
         }
     },
     async () => {
+        const target = 'getTempVersion'
+        const result = helper[target]("1.32", 2)
+        if (result !== null) {
+            return `${target}: When there is no third part then should return null, ${result}`
+        }
+    },
+    async () => {
         const target = 'lookForFirstDiff'
         const leftArray = ['a', 'b', 'c', 'd', 'e', 'f']
         const rightArray = [...leftArray]

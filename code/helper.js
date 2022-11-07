@@ -42,15 +42,17 @@ const matchVersion = (() => {
 })()
 
 const getTempVersion = (() => {
-    const patern = '[^.]+\.'
+    const patern = '[^.]+\\.'
     const regex1 = new RegExp(patern)
     const regex2 = new RegExp(patern + patern)
 
     return function getTempVersion(oldVersion, parts) {
-        if (parts === 0) return '+'
-        if (parts === 1) return matchFirstOccurance(regex1, oldVersion) + '+'
-        if (parts === 2) return matchFirstOccurance(regex2, oldVersion) + '+'
-        return null
+        let tempVersion = null
+        if (parts === 0) tempVersion = ''
+        if (parts === 1) tempVersion = matchFirstOccurance(regex1, oldVersion)
+        if (parts === 2) tempVersion = matchFirstOccurance(regex2, oldVersion)
+        if (tempVersion != null) tempVersion += '+'
+        return tempVersion
     }
 })()
 
