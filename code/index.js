@@ -30,7 +30,7 @@ async function start() {
 
         let linesCopy = [...lines]
             .map(line => {
-                const oldVersion = helper.matchVersion(line, true)
+                const oldVersion = /testImplementation|implementation|compile/.test(line) && helper.matchVersion(line, true)
                 const tempVersion = helper.getTempVersion(oldVersion, parts)
                 if (oldVersion && tempVersion) {
                     // console.log(line + '     ' + oldVersion + '   ' + tempVersion)
