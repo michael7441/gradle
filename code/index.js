@@ -25,7 +25,7 @@ async function start() {
     const lines = await helper.readLines(gradleFile)
     console.log('lines.length', lines.length)
 
-    for (let parts of [ /*2, 1, 0*/ ]) {
+    for (let parts of [ 2, 1, 0 ]) {
         console.log(`# Cache gradleDependancies: ${parts} parts`)
 
         let linesCopy = [...lines]
@@ -55,7 +55,7 @@ async function start() {
                 ====================================
                 ${line}     version: ${version}
             `)
-            for (let parts of [ 2,/* 1, 0*/ ]) {
+            for (let parts of [ 2, 1, 0 ]) {
                 await processLine(lineNumber, parts, gradleFile, repoDirectory, botDirectory, previouslyFailedTheBuildFile)
 
                 // command = `python3 ./bot/processLine.py ${lineNumber} ${parts} ${gradleFile}`
