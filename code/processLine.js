@@ -1,7 +1,8 @@
 const helper = require('./helper')
+const cache = require('./cache')
 const fs = require('fs/promises')
 
-async function processLine(lineNumber, parts, gradleFile, repoDirectory, botDirectory, previouslyFailedTheBuildFile) {
+async function processLine(lineNumber, parts, gradleFile, repoDirectory, botDirectory) {
     
     await helper.execPrint(`
         cd ${repoDirectory}
@@ -23,18 +24,6 @@ async function processLine(lineNumber, parts, gradleFile, repoDirectory, botDire
     }
     console.log('tempVersion', tempVersion)
     
-    const dependenciesFile = botDirectory + '/dependancies.txt'
-
-    await helper.exec(`
-        cd ${repoDirectory}
-        if grep -q $(git rev-parse HEAD) ${dependenciesFile}; then
-          echo 'dependancies hash hit'
-        else
-          echo 'dependancies hash miss'
-          ${botDirectory}/dependancies.sh > ${dependenciesFile}
-        fi
-    `)
-    const oldDependencies = await helper.readLines(dependenciesFile)
     
     let newVersion = null
 
@@ -43,14 +32,17 @@ async function processLine(lineNumber, parts, gradleFile, repoDirectory, botDire
         const matchingLine = helper.lookForFirstOccuranceOfPackage(newDependencies, line)
         newVersion = helper.matchVersion(matchingLine, false)
     } else {
+        const getDependencies = async () => (await cache
+            .gradleDependencies(repoDirectory, gradleFile, botDirectory, ''))
+            .split('\n')
+        const oldDependencies = await getDependencies()
         lines[lineNumber] = line.replace(oldVersion, tempVersion)
         await helper.writeLines(gradleFile, lines)
-        const newDependencies = (await helper.exec(`
-            cd ${repoDirectory}
-            ${botDirectory}/dependancies.sh
-        `)).split('\n')
+        const newDependencies = await getDependencies()
         const diff = helper.lookForFirstDiff(oldDependencies, newDependencies, 3)
-        newVersion = helper.matchVersion(diff[1], false)
+        if (diff != null) {
+            newVersion = helper.matchVersion(diff[1], false)
+        }
     }
     console.log('newVersion', newVersion)
     if (!helper.isNewVersionActuallyNewer(newVersion, oldVersion)) {
@@ -59,21 +51,10 @@ async function processLine(lineNumber, parts, gradleFile, repoDirectory, botDire
     }
     
     lines[lineNumber] = line.replace(oldVersion, newVersion)
-    
-    const previouslyFailedTheBuild = '' + await fs.readFile(previouslyFailedTheBuildFile)
-    if (previouslyFailedTheBuild.includes(lines[lineNumber])) {
-        console.error('previouslyFailedTheBuild')
-        return
-    }
-    
     helper.writeLines(gradleFile, lines)
     
-    const unitTestResult = await helper.exec(`
-        cd ${repoDirectory}
-        ./gradlew test --no-daemon | grep 'BUILD SUCCESSFUL'
-    `)
+    const unitTestResult = await cache.unitTestOutput(repoDirectory, gradleFile, botDirectory)
     if (!unitTestResult.includes('BUILD SUCCESSFUL')) {
-        await fs.appendFile(previouslyFailedTheBuildFile, '\n' + lines[lineNumber] + '\n')
         console.error('unit test not success', lines[lineNumber])
         return
     }
