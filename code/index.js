@@ -19,6 +19,7 @@ async function start() {
     await helper.execPrint(`
         cd ${repoDirectory}
         mkdir -p ${botDirectory}
+        chmod +x ${botDirectory}
         git checkout HEAD -- ${gradleFile}
     `)
 
