@@ -16,8 +16,9 @@ function execAndCache(repoDirectory, gradleFile, botDirectory, name, command, ad
         hash="$(openssl sha1 ${gradleFile} | awk '{print $NF}')"
         file="${botDirectory}/$hash.${name}.txt"
         if [ ! -f $file ]; then
-            ${command} > $file.temp
-            mv $file.temp $file
+            temp="./$(date '+%Y-%m-%d-%H-%M-%S').temp.txt"
+            ${command} > $temp
+            mv $temp $file
         fi
         if [ ! -z "${additionalFileName}" ]; then
             cat $file > "${additionalFileName}"
