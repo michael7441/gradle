@@ -2,12 +2,12 @@ const helper = require('./helper')
 
 function gradleDependencies(repoDirectory, gradleFile, botDirectory, additionalFileName) {
     return execAndCache(repoDirectory, gradleFile, botDirectory, 
-        'gradleDependencies', './gradlew vapi-service:dependencies --no-daemon', additionalFileName)
+        'gradleDependencies', './gradlew vapi-service:dependencies', additionalFileName)
 }
 
 function unitTestOutput(repoDirectory, gradleFile, botDirectory) {
     return execAndCache(repoDirectory, gradleFile, botDirectory, 
-        'unitTestOutput', './gradlew test --no-daemon', '')
+        'unitTestOutput', './gradlew test componentTestNoDeps', '')
 }
 
 function execAndCache(repoDirectory, gradleFile, botDirectory, name, command, additionalFileName) {

@@ -65,6 +65,7 @@ async function processLine(lineNumber, parts, gradleFile, repoDirectory, botDire
         git commit -m 'gradle-bot: ${helper.cleanUpLine(line)} -> ${helper.cleanUpLine(lines[lineNumber])}'
     `)
     console.log('SUCCESS_NEW_VERSION_COMMITED')
+    throw 'SUCCESS_NEW_VERSION_COMMITED'
 }
     
 module.exports = processLine

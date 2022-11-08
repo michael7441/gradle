@@ -7,6 +7,7 @@ const cache = require('./cache')
 // console.log(fs); return;
 
 async function start() {
+    console.time('build timer')
     //await testRunner()
 
     const fdsf = "leton";
@@ -43,18 +44,36 @@ async function start() {
         await cache.gradleDependencies(repoDirectory, gradleFile, botDirectory,
             `${botDirectory}/parts${parts}.txt`)
     }
+    
 
+    let count = 0
+
+    console.timeLog('build timer')
     console.log('# Test each line with each part:')
     for (let lineNumber = 0; lineNumber < lines.length; lineNumber++) {
         let line = lines[lineNumber]
         const version = helper.matchVersion(line, true)
         if (version) {
+            console.timeLog('build timer')
             console.log(`
                 ====================================
                 ${line}     version: ${version}
             `)
             for (let parts of [ 2, 1, 0 ]) {
+                count++
+                console.log('count', count)
+                if (count !== 1) console.log(`
+                AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+                AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+                AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+                AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+                AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+                AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+                AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+                AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+                `)
                 await processLine(lineNumber, parts, gradleFile, repoDirectory, botDirectory)
+                count--
 
                 // command = `python3 ./bot/processLine.py ${lineNumber} ${parts} ${gradleFile}`
                 // console.log(command)
@@ -64,6 +83,7 @@ async function start() {
             }
         }
     }
+    console.timeLog('build timer')
 }
 
 start()
