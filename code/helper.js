@@ -121,7 +121,7 @@ async function gitCheckout(repoDirectory, branchName) {
     }
 }
 
-async function remotebranchAlreadyExists(repoDirectory, branchName) {
+async function remoteBranchAlreadyExists(repoDirectory, branchName) {
     try {
         // If the branch exists in github then this command will succeed
         await execPrint(`
@@ -135,8 +135,13 @@ async function remotebranchAlreadyExists(repoDirectory, branchName) {
     }
 }
 
-function fileExists(path) {
-    return fs.stat(path).then(() => true).catch(() => false);
+async function fileExists(path) {
+    try {
+        await fs.stat(path);
+        return true;
+    } catch {
+        return false;
+    }
 }
 
 async function readLines(path) {
