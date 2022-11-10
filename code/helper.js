@@ -108,7 +108,20 @@ function branchName(line) {
     return 'δ-gradle-dependancy-update-bot/' + clean
 }
 
-async function remoteBranchAlreadyExists(repoDirectory, branchName) {
+async function gitCheckout(repoDirectory, branchName) {
+    try {
+        await execPrint(`
+            cd ${repoDirectory}
+            git checkout -b '${branchName}'
+        `)
+        return true
+    } catch (err) {
+        // An exception was thrown because the branch alrady exists
+        return false
+    }
+}
+
+async function remotebranchAlreadyExists(repoDirectory, branchName) {
     try {
         // If the branch exists in github then this command will succeed
         await execPrint(`
@@ -146,6 +159,7 @@ exports.lookForFirstOccuranceOfPackage = lookForFirstOccuranceOfPackage
 exports.isNewVersionActuallyNewer = isNewVersionActuallyNewer
 exports.cleanUpLine = cleanUpLine
 exports.branchName = branchName
+exports.gitCheckout = gitCheckout
 exports.remoteBranchAlreadyExists = remoteBranchAlreadyExists
 exports.fail = fail
 exports.fileExists = fileExists

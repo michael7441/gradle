@@ -44,9 +44,12 @@ async function processLine({ lines, line, lineNumber, parts, gradleFile, repoDir
     helper.writeLines(gradleFile, lines)
     
     const branchName = helper.branchName(lines[lineNumber])
+    const remoteBranchAlreadyExists = await helper.remoteBranchAlreadyExists(repoDirectory, branchName)
+    const gitCheckoutSuccess = await helper.gitCheckout(repoDirectory, branchName)
+    
     console.log('branchName', branchName)
-    if (await helper.remoteBranchAlreadyExists(repoDirectory, branchName)) {
-        console.error(`branch ${branchName} already exists`)
+    if (remoteBranchAlreadyExists || !gitCheckoutSuccess) {
+        console.error('branch already exists')
         return
     }
 
@@ -55,7 +58,7 @@ async function processLine({ lines, line, lineNumber, parts, gradleFile, repoDir
         git add ${gradleFile}
         git commit -m 'gradle-dependancy-update-bot: ${helper.cleanUpLine(line)} -> ${helper.cleanUpLine(lines[lineNumber])}'
         git log -1
-        git push github 'HEAD:${branchName}'
+        git push github
         git reset HEAD~1
     `)
     global.gitPushCount++
