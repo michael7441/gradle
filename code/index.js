@@ -14,10 +14,20 @@ async function start() {
 
     const fdsf = "leton";
     const isLocal = await helper.fileExists("/Users/msing" + fdsf + "/repos/vapi/vapi-service/build.gradle")
+    
     const repoDirectory = isLocal ? "/Users/msing" + fdsf + "/repos/vapi"
-                                  : "/var/jenkins_home/workspace/michael-test";
-    const gradleFile = repoDirectory + "/vapi-service/build.gradle"
+                                  : process.env.GRADLE_DEPENDANCY_UPDATE_BOT_REPO_DIRECTORY
+                                  //"/var/jenkins_home/workspace/michael-test";
+    
+    const gradleFile = isLocal ? repoDirectory + "/vapi-service/build.gradle"
+                               : process.env.GRADLE_DEPENDANCY_UPDATE_BOT_GRADLE_FILE
+
     const botDirectory = repoDirectory + "/bot"
+    
+    console.log({isLocal, repoDirectory, gradleFile, botDirectory })
+    if (!repoDirectory || !gradleFile) {
+        throw 'No environment variables'
+    }
 
     await helper.execPrint(`
         cd ${repoDirectory}
