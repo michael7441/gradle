@@ -103,6 +103,25 @@ function cleanUpLine(line) {
     return line.replace(/['"]/g, '').trim()
 }
 
+function branchName(line) {
+    const clean = line.replace(/[^a-z0-9]+/gi, '-').replace(/^-+|-+$/g, '')
+    return 'δ-gradle-dependancy-update-bot/' + clean
+}
+
+async function remoteBranchAlreadyExists(repoDirectory, branchName) {
+    try {
+        // If the branch exists in github then this command will succeed
+        await execPrint(`
+            cd ${repoDirectory}
+            git show-ref github '${branchName}'
+        `)
+        return true
+    } catch (err) {
+        // An exception was through because the branch could not be found
+        return false
+    }
+}
+
 function fileExists(path) {
     return fs.stat(path).then(() => true).catch(() => false);
 }
@@ -126,6 +145,8 @@ exports.lookForFirstDiff = lookForFirstDiff
 exports.lookForFirstOccuranceOfPackage = lookForFirstOccuranceOfPackage
 exports.isNewVersionActuallyNewer = isNewVersionActuallyNewer
 exports.cleanUpLine = cleanUpLine
+exports.branchName = branchName
+exports.remoteBranchAlreadyExists = remoteBranchAlreadyExists
 exports.fail = fail
 exports.fileExists = fileExists
 exports.readLines = readLines

@@ -9,6 +9,8 @@ const cache = require('./cache')
 async function start() {
     console.time('build timer')
     //await testRunner()
+    global.testsPassed = true
+    global.gitPushCount = 0
 
     const fdsf = "leton";
     const isLocal = await helper.fileExists("/Users/msing" + fdsf + "/repos/vapi/vapi-service/build.gradle")
@@ -22,6 +24,7 @@ async function start() {
         mkdir -p ${botDirectory}
         chmod +x ${botDirectory}
         git checkout HEAD -- ${gradleFile}
+        git fetch --prune github
     `)
 
     const lines = await helper.readLines(gradleFile)
@@ -52,7 +55,7 @@ async function start() {
     console.log('# Test each line with each part:')
     for (let lineNumber = 0; lineNumber < lines.length; lineNumber++) {
         let line = lines[lineNumber]
-        const version = helper.matchVersion(line, true)
+        const version = /testImplementation|implementation|compile/.test(line) && helper.matchVersion(line, true)
         if (version) {
             console.timeLog('build timer')
             console.log(`
@@ -72,14 +75,8 @@ async function start() {
                 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
                 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
                 `)
-                await processLine(lineNumber, parts, gradleFile, repoDirectory, botDirectory)
+                await processLine({ lines: [...lines], line, lineNumber, parts, gradleFile, repoDirectory, botDirectory })
                 count--
-
-                // command = `python3 ./bot/processLine.py ${lineNumber} ${parts} ${gradleFile}`
-                // console.log(command)
-                // r = helper.commandPrint(command)
-                // if 'SUCCESS_NEW_VERSION_COMMITED' in r:
-                // break
             }
         }
     }

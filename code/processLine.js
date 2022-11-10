@@ -2,16 +2,7 @@ const helper = require('./helper')
 const cache = require('./cache')
 const fs = require('fs/promises')
 
-async function processLine(lineNumber, parts, gradleFile, repoDirectory, botDirectory) {
-    
-    await helper.execPrint(`
-        cd ${repoDirectory}
-        git checkout HEAD -- ${gradleFile}
-    `)
-    
-    const lines = await helper.readLines(gradleFile)
-    const line = lines[lineNumber]
-
+async function processLine({ lines, line, lineNumber, parts, gradleFile, repoDirectory, botDirectory }) {
     const oldVersion = helper.matchVersion(line, true)
     if (!oldVersion) {
         console.error('no old version')
@@ -23,7 +14,6 @@ async function processLine(lineNumber, parts, gradleFile, repoDirectory, botDire
         return
     }
     console.log('tempVersion', tempVersion)
-    
     
     let newVersion = null
 
@@ -53,20 +43,28 @@ async function processLine(lineNumber, parts, gradleFile, repoDirectory, botDire
     lines[lineNumber] = line.replace(oldVersion, newVersion)
     helper.writeLines(gradleFile, lines)
     
-    const unitTestResult = await cache.unitTestOutput(repoDirectory, gradleFile, botDirectory)
-    if (!unitTestResult.includes('BUILD SUCCESSFUL')) {
-        console.error('unit test not success', lines[lineNumber])
+    const branchName = helper.branchName(lines[lineNumber])
+    console.log('branchName', branchName)
+    if (await helper.remoteBranchAlreadyExists(repoDirectory, branchName)) {
+        console.error(`branch ${branchName} already exists`)
         return
     }
 
-    await helper.exec(`
+    await helper.execPrint(`
         cd ${repoDirectory}
         git add ${gradleFile}
-        git commit -m 'gradle-bot: ${helper.cleanUpLine(line)} -> ${helper.cleanUpLine(lines[lineNumber])}'
+        git commit -m 'gradle-dependancy-update-bot: ${helper.cleanUpLine(line)} -> ${helper.cleanUpLine(lines[lineNumber])}'
+        git log -1
+        git push github 'HEAD:${branchName}'
+        git reset HEAD~1
     `)
+    global.gitPushCount++
     console.log('SUCCESS_NEW_VERSION_COMMITED')
-    throw 'SUCCESS_NEW_VERSION_COMMITED'
+
+    if (global.gitPushCount >= 2) {
+        // Just so we don't spam the CI build
+        throw 'gitPushCount' + global.gitPushCount
+    }
 }
     
 module.exports = processLine
-    
