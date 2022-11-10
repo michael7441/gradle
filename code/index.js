@@ -23,9 +23,15 @@ async function start() {
                                : process.env.GRADLE_DEPENDANCY_UPDATE_BOT_GRADLE_FILE
 
     const botDirectory = repoDirectory + "/bot"
-    
-    console.log({isLocal, repoDirectory, gradleFile, botDirectory })
-    if (!repoDirectory || !gradleFile) {
+
+
+    global.dependenciesCmd = isLocal ? './gradlew vapi-service:dependencies'
+                                     : process.env.GRADLE_DEPENDANCY_UPDATE_BOT_CMD
+
+    console.log({isLocal, repoDirectory, gradleFile, 
+        botDirectory, dependenciesCmd: global.dependenciesCmd })
+
+    if (!repoDirectory || !gradleFile || !global.dependenciesCmd) {
         throw 'No environment variables'
     }
 
@@ -35,6 +41,12 @@ async function start() {
         chmod +x ${botDirectory}
         git checkout HEAD -- ${gradleFile}
         git fetch --prune github
+    `)
+
+    // warm up the daemon
+    await helper.exec(`
+        cd ${repoDirectory}
+        ${global.dependenciesCmd}
     `)
 
     const lines = await helper.readLines(gradleFile)
