@@ -56,7 +56,7 @@ async function processLine({ lines, line, lineNumber, parts, gradleFile, repoDir
     await helper.execPrint(`
         cd ${repoDirectory}
         git add ${gradleFile}
-        git commit -m 'gradle-dependancy-update-bot: ${helper.cleanUpLine(line)} -> ${helper.cleanUpLine(lines[lineNumber])}'
+        git commit -m 'gradle-bot: ${helper.cleanUpLine(line)} -> ${helper.cleanUpLine(lines[lineNumber])}'
         git log -1
         git push github
         git reset HEAD~1

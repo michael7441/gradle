@@ -100,12 +100,18 @@ function getIntAtPostion(version, i) {
 }
 
 function cleanUpLine(line) {
-    return line.replace(/['"]/g, '').trim()
+    return line
+        .replace(/testImplementation|implementation|compile/, '')
+        .replace(/['"{}\(\)]/g, '')
+        .trim()
 }
 
 function branchName(line) {
-    const clean = line.replace(/[^a-z0-9]+/gi, '-').replace(/^-+|-+$/g, '')
-    return 'δ-gradle-dependancy-update-bot/' + clean
+    const clean = line
+        .replace(/testImplementation|implementation|compile/, '')
+        .replace(/[^a-z0-9]+/gi, '-')
+        .replace(/^-+|-+$/g, '')
+    return 'δ-gradle-bot/' + clean
 }
 
 async function gitCheckout(repoDirectory, branchName) {
