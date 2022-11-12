@@ -77,7 +77,9 @@ async function start() {
     console.log('# Test each line with each part:')
     for (let lineNumber = 0; lineNumber < lines.length; lineNumber++) {
         let line = lines[lineNumber]
-        const version = /testImplementation|implementation|compile/.test(line) && helper.matchVersion(line, true)
+        const version = 
+            //    /testImplementation|implementation|compile/.test(line) && 
+            helper.matchVersion(line, true)
         if (version) {
             console.timeLog('build timer')
             console.log(`
