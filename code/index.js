@@ -27,6 +27,8 @@ async function start() {
 
     global.dependenciesCmd = isLocal ? './gradlew vapi-service:dependencies'
                                      : process.env.GRADLE_DEPENDANCY_UPDATE_BOT_CMD
+    
+    global.gitPushCountLimit = +(process.env.GRADLE_DEPENDANCY_GIT_PUSH_COUNT_LIMIT || 2)
 
     console.log({isLocal, repoDirectory, gradleFile, 
         botDirectory, dependenciesCmd: global.dependenciesCmd })

@@ -63,8 +63,8 @@ async function processLine({ lines, line, lineNumber, parts, gradleFile, repoDir
     `)
     global.gitPushCount++
     console.log('SUCCESS_NEW_VERSION_COMMITED')
-
-    if (global.gitPushCount >= 10) {
+    
+    if (global.gitPushCount >= global.gitPushCountLimit) {
         // Just so we don't spam the CI build
         throw 'gitPushCount' + global.gitPushCount
     }
