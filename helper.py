@@ -101,3 +101,4 @@ def getFoo(version, i):
 
 def cleanUpLine(line):
     return line.replace("'", "").replace('"', "").strip()
+
